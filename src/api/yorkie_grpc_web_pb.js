@@ -545,5 +545,85 @@ proto.api.YorkiePromiseClient.prototype.pushPull =
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.api.GetClientsRequest,
+ *   !proto.api.GetClientsResponse>}
+ */
+const methodDescriptor_Yorkie_GetClients = new grpc.web.MethodDescriptor(
+  '/api.Yorkie/GetClients',
+  grpc.web.MethodType.UNARY,
+  proto.api.GetClientsRequest,
+  proto.api.GetClientsResponse,
+  /**
+   * @param {!proto.api.GetClientsRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.api.GetClientsResponse.deserializeBinary
+);
+
+
+/**
+ * @const
+ * @type {!grpc.web.AbstractClientBase.MethodInfo<
+ *   !proto.api.GetClientsRequest,
+ *   !proto.api.GetClientsResponse>}
+ */
+const methodInfo_Yorkie_GetClients = new grpc.web.AbstractClientBase.MethodInfo(
+  proto.api.GetClientsResponse,
+  /**
+   * @param {!proto.api.GetClientsRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.api.GetClientsResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.api.GetClientsRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.Error, ?proto.api.GetClientsResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.api.GetClientsResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.api.YorkieClient.prototype.getClients =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/api.Yorkie/GetClients',
+      request,
+      metadata || {},
+      methodDescriptor_Yorkie_GetClients,
+      callback);
+};
+
+
+/**
+ * @param {!proto.api.GetClientsRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.api.GetClientsResponse>}
+ *     Promise that resolves to the response
+ */
+proto.api.YorkiePromiseClient.prototype.getClients =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/api.Yorkie/GetClients',
+      request,
+      metadata || {},
+      methodDescriptor_Yorkie_GetClients);
+};
+
+
 module.exports = proto.api;
 

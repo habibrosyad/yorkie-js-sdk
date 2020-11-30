@@ -29,6 +29,9 @@ export class ActivateClientRequest extends jspb.Message {
   getClientKey(): string;
   setClientKey(value: string): ActivateClientRequest;
 
+  getClientMetaMap(): jspb.Map<string, string>;
+  clearClientMetaMap(): ActivateClientRequest;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): ActivateClientRequest.AsObject;
   static toObject(includeInstance: boolean, msg: ActivateClientRequest): ActivateClientRequest.AsObject;
@@ -41,6 +44,7 @@ export namespace ActivateClientRequest {
   export type AsObject = {
     header?: RequestHeader.AsObject,
     clientKey: string,
+    clientMetaMap: Array<[string, string]>,
   }
 }
 
@@ -399,6 +403,68 @@ export namespace PushPullResponse {
   export type AsObject = {
     clientId: string,
     changePack?: ChangePack.AsObject,
+  }
+}
+
+export class GetClientsRequest extends jspb.Message {
+  getClientIdsList(): Array<string>;
+  setClientIdsList(value: Array<string>): GetClientsRequest;
+  clearClientIdsList(): GetClientsRequest;
+  addClientIds(value: string, index?: number): GetClientsRequest;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetClientsRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: GetClientsRequest): GetClientsRequest.AsObject;
+  static serializeBinaryToWriter(message: GetClientsRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetClientsRequest;
+  static deserializeBinaryFromReader(message: GetClientsRequest, reader: jspb.BinaryReader): GetClientsRequest;
+}
+
+export namespace GetClientsRequest {
+  export type AsObject = {
+    clientIdsList: Array<string>,
+  }
+}
+
+export class Client extends jspb.Message {
+  getClientId(): string;
+  setClientId(value: string): Client;
+
+  getClientMetaMap(): jspb.Map<string, string>;
+  clearClientMetaMap(): Client;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): Client.AsObject;
+  static toObject(includeInstance: boolean, msg: Client): Client.AsObject;
+  static serializeBinaryToWriter(message: Client, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): Client;
+  static deserializeBinaryFromReader(message: Client, reader: jspb.BinaryReader): Client;
+}
+
+export namespace Client {
+  export type AsObject = {
+    clientId: string,
+    clientMetaMap: Array<[string, string]>,
+  }
+}
+
+export class GetClientsResponse extends jspb.Message {
+  getClientsList(): Array<Client>;
+  setClientsList(value: Array<Client>): GetClientsResponse;
+  clearClientsList(): GetClientsResponse;
+  addClients(value?: Client, index?: number): Client;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetClientsResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetClientsResponse): GetClientsResponse.AsObject;
+  static serializeBinaryToWriter(message: GetClientsResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetClientsResponse;
+  static deserializeBinaryFromReader(message: GetClientsResponse, reader: jspb.BinaryReader): GetClientsResponse;
+}
+
+export namespace GetClientsResponse {
+  export type AsObject = {
+    clientsList: Array<Client.AsObject>,
   }
 }
 

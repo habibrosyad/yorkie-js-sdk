@@ -48,6 +48,13 @@ export class YorkieClient {
                response: src_api_yorkie_pb.PushPullResponse) => void
   ): grpcWeb.ClientReadableStream<src_api_yorkie_pb.PushPullResponse>;
 
+  getClients(
+    request: src_api_yorkie_pb.GetClientsRequest,
+    metadata: grpcWeb.Metadata | undefined,
+    callback: (err: grpcWeb.Error,
+               response: src_api_yorkie_pb.GetClientsResponse) => void
+  ): grpcWeb.ClientReadableStream<src_api_yorkie_pb.GetClientsResponse>;
+
 }
 
 export class YorkiePromiseClient {
@@ -84,6 +91,11 @@ export class YorkiePromiseClient {
     request: src_api_yorkie_pb.PushPullRequest,
     metadata?: grpcWeb.Metadata
   ): Promise<src_api_yorkie_pb.PushPullResponse>;
+
+  getClients(
+    request: src_api_yorkie_pb.GetClientsRequest,
+    metadata?: grpcWeb.Metadata
+  ): Promise<src_api_yorkie_pb.GetClientsResponse>;
 
 }
 

@@ -29,6 +29,7 @@ import {
   PushPullRequest,
   WatchDocumentsRequest,
   WatchDocumentsResponse,
+  GetClientsRequest,
   EventType as WatchEventType,
 } from '../api/yorkie_pb';
 import { converter } from '../api/converter';
@@ -76,6 +77,7 @@ interface Attachment {
 
 export interface ClientOptions {
   key?: string;
+  meta?: Map<string, string>;
   syncLoopDuration: number;
   reconnectStreamDelay: number;
 }
@@ -93,6 +95,7 @@ const DefaultClientOptions: ClientOptions = {
 export class Client implements Observable<ClientEvent> {
   private id: ActorID;
   private key: string;
+  private meta: Map<string, string>;
   private status: ClientStatus;
   private attachmentMap: Map<string, Attachment>;
   private syncLoopDuration: number;
@@ -108,6 +111,7 @@ export class Client implements Observable<ClientEvent> {
     opts = opts || DefaultClientOptions;
 
     this.key = opts.key ? opts.key : uuid();
+    this.meta = opts.meta ? opts.meta : new Map();
     this.status = ClientStatus.Deactivated;
     this.attachmentMap = new Map();
     this.syncLoopDuration = opts.syncLoopDuration;
@@ -132,6 +136,9 @@ export class Client implements Observable<ClientEvent> {
     return new Promise((resolve, reject) => {
       const req = new ActivateClientRequest();
       req.setClientKey(this.key);
+      this.meta.forEach((value, key) => {
+        req.getClientMetaMap().set(key, value);
+      });
 
       this.rpcClient.activateClient(req, {}, (err, res) => {
         if (err) {
@@ -422,6 +429,33 @@ export class Client implements Observable<ClientEvent> {
     keys: Array<DocumentKey>,
     resp: WatchDocumentsResponse,
   ) {
+    const getPeers = (peersMap, key) => {
+      const attachment = this.attachmentMap.get(key.toIDString());
+      const peerIDs = Array.from(
+        attachment.peerClients.keys(),
+      );
+      const req = new GetClientsRequest();
+      req.setClientIdsList(peerIDs);
+
+      peersMap[key.toIDString()] = new Promise((resolve, reject) => {
+        this.rpcClient.getClients(req, {}, (err, res) => {
+          if (err) {
+            logger.error(`[GC] c:"${this.getKey()}" err :`, err);
+            reject(err);
+            return;
+          }
+
+          resolve(res.getClientsList().reduce((clientsMap, client) => {
+            clientsMap[client.getClientId()] = client.getClientMetaMap();
+
+            return clientsMap;
+          }, {}));
+        });
+      });
+
+      return peersMap;
+    }
+
     if (resp.hasInitialization()) {
       const peersMap = resp.getInitialization().getPeersMapByDocMap();
       peersMap.forEach((peers, docID) => {
@@ -433,13 +467,7 @@ export class Client implements Observable<ClientEvent> {
 
       this.eventStreamObserver.next({
         name: ClientEventType.DocumentsWatchingPeerChanged,
-        value: keys.reduce((peersMap, key) => {
-          const attachment = this.attachmentMap.get(key.toIDString());
-          peersMap[key.toIDString()] = Array.from(
-            attachment.peerClients.keys(),
-          );
-          return peersMap;
-        }, {}),
+        value: keys.reduce(getPeers, {}),
       });
       return;
     }
@@ -474,13 +502,7 @@ export class Client implements Observable<ClientEvent> {
     ) {
       this.eventStreamObserver.next({
         name: ClientEventType.DocumentsWatchingPeerChanged,
-        value: respKeys.reduce((peersMap, key) => {
-          const attachment = this.attachmentMap.get(key.toIDString());
-          peersMap[key.toIDString()] = Array.from(
-            attachment.peerClients.keys(),
-          );
-          return peersMap;
-        }, {}),
+        value: respKeys.reduce(getPeers, {}),
       });
     }
   }

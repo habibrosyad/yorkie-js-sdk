@@ -25,6 +25,7 @@ service Yorkie {
     rpc DetachDocument (DetachDocumentRequest) returns (DetachDocumentResponse) {}
     rpc WatchDocuments (WatchDocumentsRequest) returns (stream WatchDocumentsResponse) {}
     rpc PushPull (PushPullRequest) returns (PushPullResponse) {}
+    rpc GetClients (GetClientsRequest) returns (GetClientsResponse) {}
 }
 
 /////////////////////////////////////////
@@ -38,6 +39,7 @@ message RequestHeader {
 message ActivateClientRequest {
     RequestHeader header = 1;
     string client_key = 2;
+    map<string, string> client_meta = 3;
 }
 
 message ActivateClientResponse {
@@ -112,6 +114,19 @@ message PushPullRequest {
 message PushPullResponse {
     string client_id = 1;
     ChangePack change_pack = 2;
+}
+
+message GetClientsRequest {
+    repeated string client_ids = 1;
+}
+
+message Client {
+    string client_id = 1;
+    map<string, string> client_meta = 2;
+}
+
+message GetClientsResponse {
+    repeated Client clients = 1;
 }
 
 /////////////////////////////////////////
